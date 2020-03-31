@@ -16,8 +16,8 @@ I will write a better description here <s>soon</s> at some point, but all you ne
 ## Usage
 
 To add the following numbers
-
-<img src="https://latex.codecogs.com/svg.latex?\Large&space;5_{-2}^{+1}\,+\,3_{-3}^{+1}\,+\,4_{-3}^{+2}"/>
+	
+![equation](http://latex.codecogs.com/gif.latex?5_{-2}^{+1}\,+\,3_{-3}^{+1}\,+\,4_{-3}^{+2})
 
 <!--$$
 \qquad 5_{-2}^{+1}  \,+\,  3_{-3}^{+1}  \,+\,  4_{-3}^{+2},
