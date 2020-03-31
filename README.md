@@ -19,6 +19,10 @@ To add the following numbers
 
 <img src="https://latex.codecogs.com/svg.latex?\Large&space;5_{-2}^{+1}\,+\,3_{-3}^{+1}\,+\,4_{-3}^{+2}"/>
 
+<!--$$
+\qquad 5_{-2}^{+1}  \,+\,  3_{-3}^{+1}  \,+\,  4_{-3}^{+2},
+$$
+-->
 define arrays/lists containing the central values, lower errors, and upper errors, respectively, and call `add_asym` with these arrays, using either a linear transformation (`order=1`) or a quadratic transformation (`order=2`):
 
 ```python
