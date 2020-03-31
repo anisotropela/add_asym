@@ -46,7 +46,9 @@ The output is the central value, the lower error, and the upper error, respectiv
    & \simeq & 12_{-4.7}^{+2.4}. \hspace{3cm}(\mathrm{WRONG!})
   \end{array}
 $$
--->This result can be acheived setting `order=0`, but will output a warning:
+-->
+
+This result can be acheived setting `order=0`, but will output a warning:
 
 ```python
 >>> add_asym(x0,s1,s2,order=0)
