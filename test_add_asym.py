@@ -312,7 +312,9 @@ def Gompertz(x,xi,eta,b):
   """
   PDF of a Gompertz distribution
   (https://en.wikipedia.org/wiki/Gompertz_distribution).
-  The PDF is normalized and has been generalized with a location parameter xi..
+  The PDF is normalized (is it though?) and has been generalized with a
+  location parameter xi.
+  Skewness is always -12*sqrt(6) / pi**2 * zeta(3) ~ 1.3955.
   xi (real): Location
   eta (>0):  Shape
   b   (>0):  Scale
@@ -792,6 +794,61 @@ def testemall(nsample=1000,fname='add_asym.dat'):
     header='n1 n2   skew1   skew2    med0     lo0     hi0    med1     lo1     hi1    med2     lo2     hi2')
 #------------------------------------------------------------------------------
 
+def getRandomDistr(x,allowInverted=True):
+  """
+  Return a random PDF defined on x.
+  Most of these PDFs have a positive skewness. The keyword allowInverted
+  gives the possibility of flipping the selected PDF.
+  """
+  #Lists of possible PDFs
+  PDFs    = [
+             lognorm,
+             loglogistic,
+             Frechet,
+             Weibull,
+            #skewGauss,
+            #Gompertz,    # Gave up on this one; difficult to normalize (min skew -1.14?)
+            #Gumbel       # Found out thin one had constant skewness 1.14
+             ]
+  # List of ranges of arguments for these PDFs. The ranges have been chosen
+  # to be able to give functions of high skewness while still being able to
+  # be properly normalized given the dx size for x = linspace(-200,200,400000).
+  # The location parameters are a bit random...
+  allargs = [
+             [[0],    [.1,1.5]       ],       #1. Lognorm:     mu,sigma
+             [[5],    [2,30]         ],       #2. Loglogistic: a,b
+             [[3,11], [3,9], [0]     ],       #3. Frechet:     a,s,m
+             [[5],    [1.5,3]        ],       #4. Weibull:     lam, k
+            #[[5],    [5,17], [3,30] ],       #5. skewGauss:   xi,w,a
+            #[[20],   [.01,1], [.1,9]],       #6. Gompertz:    xi,eta,b
+            #[[5],    [1,17]         ]        #7. Gumbel:      mu,b
+             ]
+  n   = np.random.randint(len(PDFs))          #Function number (0-6)
+  PDF = PDFs[n]                               #Random PDF
+
+  i   = 0                                     #Counter for failed PDFs
+  while True:
+    i += 1
+    assert i<100, 'Fuck this shit, I quit.'   #Took too long to find a well-behaved PDF
+    args = []                                 #Create current arguments
+    for a in allargs[n]:
+      if len(a) == 1:
+        arg = a[0]
+      else:
+        arg = np.random.uniform(*a)
+      args.append(arg)
+    P = PDF(x,*args)
+    if abs(simps(P,x) - 1) < 1e-3: break      #Accept only if normalizable
+
+# print('function   =', PDF.__name__)
+# print('arguments  =', args)
+
+  if allowInverted:
+    if np.random.choice([0,1]): P = P[::-1]   #Flip P with probability 50%
+# print(n,args)
+  return P,n
+#-----------------------------------------------------------------------------
+
 def plotTests(order,nn='all',
               data  = 'med',
               x0    = 'med',
@@ -1193,4 +1250,146 @@ def x0s1s2(x0,lower,upper):
   >>> x0,siglo,sighi = x0s1s2(x0,lo,hi)
   """
   return x0-lo, hi-x0
+#------------------------------------------------------------------------------
+
+def testCLT():
+
+    """
+    Test that addition of multiple asymmetric PDFs follow the Central Limit
+    Theorem.
+    """
+    from add_asym import add_asym as aa
+
+    x0 = 0.
+    s1 = 2.
+    s2 = 3.
+  # x0,s1,s2 = -0.000135540, 1.999178879, +2.990626866 # skewGauss(x,-2.744594,4.069,5.21)
+  # x0,s1,s2 = 0.000000006, 1.990212159, +3.003211291  # Frechet(x,20,41,-41.7582383)
+
+    nmax    = 25
+    nPDFs   = range(1,nmax+1)#np.array(range(n)) + 1
+    n       = len(nPDFs)
+    x0tot0  = np.zeros_like(nPDFs, dtype='f8')
+    x0tot1  = np.zeros_like(nPDFs, dtype='f8')
+    x0tot2  = np.zeros_like(nPDFs, dtype='f8')
+    s1tot0  = np.zeros_like(nPDFs, dtype='f8')
+    s1tot1  = np.zeros_like(nPDFs, dtype='f8')
+    s1tot2  = np.zeros_like(nPDFs, dtype='f8')
+    s2tot0  = np.zeros_like(nPDFs, dtype='f8')
+    s2tot1  = np.zeros_like(nPDFs, dtype='f8')
+    s2tot2  = np.zeros_like(nPDFs, dtype='f8')
+    s1true1 = np.zeros_like(nPDFs, dtype='f8')
+    s2true1 = np.zeros_like(nPDFs, dtype='f8')
+    s1true2 = np.zeros_like(nPDFs, dtype='f8')
+    s2true2 = np.zeros_like(nPDFs, dtype='f8')
+    s1true3 = np.zeros_like(nPDFs, dtype='f8')
+    s2true3 = np.zeros_like(nPDFs, dtype='f8')
+    s1true4 = np.zeros_like(nPDFs, dtype='f8')
+    s2true4 = np.zeros_like(nPDFs, dtype='f8')
+    s1true5 = np.zeros_like(nPDFs, dtype='f8')
+    s2true5 = np.zeros_like(nPDFs, dtype='f8')
+    medtrue1= np.zeros_like(nPDFs, dtype='f8')
+    medtrue2= np.zeros_like(nPDFs, dtype='f8')
+    medtrue3= np.zeros_like(nPDFs, dtype='f8')
+    medtrue4= np.zeros_like(nPDFs, dtype='f8')
+    medtrue5= np.zeros_like(nPDFs, dtype='f8')
+
+    mkNew = False
+    if mkNew:
+        x  = np.linspace(-50,70,10000)
+        P1 = skewGauss(x,-2.744594,4.069,5.21)
+        P2 = Frechet(x,20,41,-41.7582383)
+        P3 = lognorm(x+6.0014,1.792,.40555269)
+        P4 = loglogistic(x+5.9801,5.982,4.096)
+        P5 = Weibull(x+2.36,4.255,1.526)
+        nsamp = 10000#000
+        R1 = np.random.choice(x,(nsamp,n),p=P1/sum(P1))
+        R2 = np.random.choice(x,(nsamp,n),p=P2/sum(P2))
+        R3 = np.random.choice(x,(nsamp,n),p=P3/sum(P3))
+        R4 = np.random.choice(x,(nsamp,n),p=P4/sum(P4))
+        R5 = np.random.choice(x,(nsamp,n),p=P5/sum(P5))
+
+        for i,nn in enumerate(nPDFs):
+            x0tot0[i],s1tot0[i],s2tot0[i] = aa([x0]*nn,[s1]*nn,[s2]*nn,order=0,ohwell=True)
+            x0tot1[i],s1tot1[i],s2tot1[i] = aa([x0]*nn,[s1]*nn,[s2]*nn,order=1)
+            x0tot2[i],s1tot2[i],s2tot2[i] = aa([x0]*nn,[s1]*nn,[s2]*nn,order=2)
+            MCsum1,dum           = np.histogram(np.sum(R1[:,:i+1],axis=1),bins=len(x),density=True)
+            MCsum2,dum           = np.histogram(np.sum(R2[:,:i+1],axis=1),bins=len(x),density=True)
+            MCsum3,dum           = np.histogram(np.sum(R3[:,:i+1],axis=1),bins=len(x),density=True)
+            MCsum4,dum           = np.histogram(np.sum(R4[:,:i+1],axis=1),bins=len(x),density=True)
+            MCsum5,dum           = np.histogram(np.sum(R5[:,:i+1],axis=1),bins=len(x),density=True)
+            med1,lo1,hi1           = wp(x,MCsum1,[0.5,0.1587,0.8413])
+            med2,lo2,hi2           = wp(x,MCsum2,[0.5,0.1587,0.8413])
+            med3,lo3,hi3           = wp(x,MCsum3,[0.5,0.1587,0.8413])
+            med4,lo4,hi4           = wp(x,MCsum4,[0.5,0.1587,0.8413])
+            med5,lo5,hi5           = wp(x,MCsum5,[0.5,0.1587,0.8413])
+            s1true1[i],s2true1[i] = med1-lo1, hi1-med1
+            s1true2[i],s2true2[i] = med2-lo2, hi2-med2
+            s1true3[i],s2true3[i] = med3-lo3, hi3-med3
+            s1true4[i],s2true4[i] = med4-lo4, hi4-med4
+            s1true5[i],s2true5[i] = med5-lo5, hi5-med5
+            medtrue1[i] = med1
+            medtrue2[i] = med2
+            medtrue3[i] = med3
+            medtrue4[i] = med4
+            medtrue5[i] = med5
+
+        rat1 = s2true1/s1true1
+        rat2 = s2true2/s1true2
+        rat3 = s2true3/s1true3
+        rat4 = s2true4/s1true4
+        rat5 = s2true5/s1true5
+        np.savetxt('testCLT_skewGauss.dat',  rat1)
+        np.savetxt('testCLT_Frechet.dat',    rat2)
+        np.savetxt('testCLT_lognorm.dat',    rat3)
+        np.savetxt('testCLT_loglogistic.dat',rat4)
+        np.savetxt('testCLT_Weibull.dat',    rat5)
+    else:
+        for i,nn in enumerate(nPDFs):
+            x0tot0[i],s1tot0[i],s2tot0[i] = aa([x0]*nn,[s1]*nn,[s2]*nn,order=0,ohwell=True)
+            x0tot1[i],s1tot1[i],s2tot1[i] = aa([x0]*nn,[s1]*nn,[s2]*nn,order=1)
+            x0tot2[i],s1tot2[i],s2tot2[i] = aa([x0]*nn,[s1]*nn,[s2]*nn,order=2)
+        rat1 = np.loadtxt('testCLT_skewGauss.dat')
+        rat2 = np.loadtxt('testCLT_Frechet.dat')
+        rat3 = np.loadtxt('testCLT_lognorm.dat')
+        rat4 = np.loadtxt('testCLT_loglogistic.dat')
+        rat5 = np.loadtxt('testCLT_Weibull.dat')
+
+    plt.clf()
+
+  # ARGH MEDIAN DOESN'T WORK
+  #
+  # plt.plot(nPDFs,x0tot0,'r-o',label='order = 0')
+  # plt.fill_between(nPDFs,x0tot0-s1tot0,x0tot0+s2tot0,alpha=.25,color='r')
+  # plt.plot(nPDFs,x0tot1,'g-o',label='order = 1')
+  # plt.fill_between(nPDFs,x0tot1-s1tot1,x0tot1+s2tot1,alpha=.25,color='g')
+  # plt.plot(nPDFs,x0tot2,'y-o',label='order = 2')
+  # plt.fill_between(nPDFs,x0tot2-s1tot2,x0tot2+s2tot2,alpha=.25,color='y')
+  # plt.plot(nPDFs,medtrue1,'b-o',lw=.5)
+  # plt.fill_between(nPDFs,medtrue1-s1true1,medtrue1+s2true1,alpha=.10,color='b')
+  # plt.plot(nPDFs,medtrue2,'b-o',lw=.5)
+  # plt.fill_between(nPDFs,medtrue2-s1true2,medtrue2+s2true2,alpha=.10,color='b')
+  # plt.plot(nPDFs,medtrue3,'b-o',lw=.5)
+  # plt.fill_between(nPDFs,medtrue3-s1true3,medtrue3+s2true3,alpha=.10,color='b')
+  # plt.plot(nPDFs,medtrue4,'b-o',lw=.5)
+  # plt.fill_between(nPDFs,medtrue4-s1true4,medtrue4+s2true4,alpha=.10,color='b')
+  # plt.plot(nPDFs,medtrue5,'b-o',lw=.5)
+  # plt.fill_between(nPDFs,medtrue5-s1true5,medtrue5+s2true5,alpha=.10,color='b')
+
+    plt.xlim([0,nmax])
+    plt.ylim([0.7,1.7])
+    plt.gca().set_xticks(range(0,26,5))
+    plt.xlabel('# of PDFs added')
+    plt.ylabel(r'$\sigma_{+}\,/\,\sigma_{-}$')
+    plt.plot(nPDFs,s2tot0/s1tot0,'r-o',lw=2,markersize=3,label='"Usual" approach')
+    plt.plot(nPDFs,s2tot1/s1tot1,'g-o',lw=2,markersize=3,label='Piecewise linear',zorder=5)
+    plt.plot(nPDFs,s2tot2/s1tot2,'y-o',lw=2,markersize=3,label='Quadratic',zorder=10)
+    plt.plot(nPDFs,rat1,'b-o',lw=.5,markersize=1,label='True convolutions')
+    plt.plot(nPDFs,rat2,'b-o',lw=.5,markersize=1)
+    plt.plot(nPDFs,rat3,'b-o',lw=.5,markersize=1)
+    plt.plot(nPDFs,rat4,'b-o',lw=.5,markersize=1)
+    plt.plot(nPDFs,rat5,'b-o',lw=.5,markersize=1)
+    plt.legend(frameon=False)
+
+    plt.savefig('testCLT.pdf', bbox_inches='tight')
 #------------------------------------------------------------------------------
