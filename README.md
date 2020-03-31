@@ -16,9 +16,9 @@ I will write a better description here <s>soon</s> at some point, but all you ne
 ## Usage
 
 To add the following numbers
-$$
-\qquad 5_{-2}^{+1}  \,+\,  3_{-3}^{+1}  \,+\,  4_{-3}^{+2},
-$$
+
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;5_{-2}^{+1}\,+\,3_{-3}^{+1}\,+\,4_{-3}^{+2}"/>
+
 define arrays/lists containing the central values, lower errors, and upper errors, respectively, and call `add_asym` with these arrays, using either a linear transformation (`order=1`) or a quadratic transformation (`order=2`):
 
 ```python
@@ -39,6 +39,8 @@ $$
 $$
 This result can be acheived setting `order=0`, but will output a warning:
 
-    >>> add_asym(x0,s1,s2,order=0)
-    This is WRONG! Mark my words, it is WROOOOOONG!!!
-    array([12.        ,  4.69041576,  2.44948974])
+```python
+>>> add_asym(x0,s1,s2,order=0)
+This is WRONG! Mark my words, it is WROOOOOONG!!!
+array([12.        ,  4.69041576,  2.44948974])
+```
