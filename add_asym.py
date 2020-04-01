@@ -18,9 +18,9 @@ def add_asym(x0s,siglos,sighis,order=2,nmax=100,tol=1e-6,ohwell=False):
 
     Description
     -----------
-    Each number is characterized by three numbers, viz. its central value x0, and
-    its standard deviations siglo and sighi toward negative and positive values,
-    respectively.
+    Each number is characterized by three numbers, viz. its central value x0,
+    and its standard deviations siglo and sighi toward negative and positive
+    values, respectively.
     
     That is, the numbers would be written as
       X = x0_{-siglo_x}^{+sighi_x}
@@ -28,8 +28,9 @@ def add_asym(x0s,siglos,sighis,order=2,nmax=100,tol=1e-6,ohwell=False):
       Z = z0_{-siglo_z}^{+sighi_z}
       etc.
 
-    The standard approach for this problem is to add the central values normally,
-    and to add the lower and upper uncertainties separately in quadrature, i.e.  
+    The standard approach for this problem is to add the central values
+    normally, and to add the lower and upper uncertainties separately in
+    quadrature, i.e.  
       X + Y = {x0+y0}_{-siglo_tot}^{+sighi_tot},
     where
       siglo_tot^2 = siglo_x^2 + siglo_y^2;
@@ -40,13 +41,13 @@ def add_asym(x0s,siglos,sighis,order=2,nmax=100,tol=1e-6,ohwell=False):
     could be described by the same three numbers), but one method that seems to
     give acceptable results for many different distributions is described in
     Barlow, R. (2003), http://arxiv.org/abs/physics/0306138v1.
-    In short, the distributions are transformed --- linearly or quadratically ---
-    to "proper" Gaussians, for which the normal, linear addition is valid. The
-    total mean, variance, and skewness can thus be found, and these values are
-    then used to transform back to get the three numbers for the final
+    In short, the distributions are transformed --- linearly or quadratically
+    --- to "proper" Gaussians, for which the normal, linear addition is valid.
+    The total mean, variance, and skewness can thus be found, and these values
+    are then used to transform back to get the three numbers for the final
     distribution.
-    Whereas the "forward" transformation can be done analytically, the "backward"
-    transformation must be done numerically by iteration.
+    Whereas the "forward" transformation can be done analytically, the
+    "backward" transformation must be done numerically by iteration.
 
     Parameters
     ----------
@@ -85,9 +86,9 @@ def add_asym(x0s,siglos,sighis,order=2,nmax=100,tol=1e-6,ohwell=False):
     find a lower central value than the "standard", but wrong, result of
     12_{-4.69}^{+2.45}. The reason is that in this case, all three addends have
     PDFs that are skewed toward lower values. Note also that both methods give
-    more symmetric errors, in accord with the Central Limit Theorem. In contrast,
-    the asymmetry of addends whose skewness are of the same sign will never
-    decrease.
+    more symmetric errors, in accord with the Central Limit Theorem. In
+    contrast, the asymmetry of addends whose skewness are of the same sign will
+    never decrease.
     """
 
     assert order in [0,1,2], "\nParameter `order` must be 1 or 2 (or 0, but... well, stick to 1 or 2)."

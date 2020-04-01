@@ -1,10 +1,13 @@
-<link href="https://raw.githubusercontent.com/anisotropela/anisotropela.github.io/master/assets/css/styles.css" rel="stylesheet"></link>
+<!--
+<link href="./styles.css" rel="stylesheet"></link>
+<script id="MathJax-script" async src="./tex-mml-chtml.js"></script>
+-->
 
 # `add_asym`
 
 ## Description
 
-`add_asym` is a <span style="color:var(--orange)">Python</span> code for adding numbers with asymmetric uncertainties. Basically just a numerical implementation of the statistical methods discussed in [Barlow (2003, arXiv:0306138)](https://ui.adsabs.harvard.edu/abs/2003physics...6138B), the code was developed as a part of the work leading to the paper [Lyman α-emitting galaxies in the epoch of reionization](https://arxiv.org/abs/1806.07392v1).
+`add_asym` is a Python code for adding numbers with asymmetric uncertainties. Basically just a numerical implementation of the statistical methods discussed in [Barlow (2003, arXiv:0306138)](https://ui.adsabs.harvard.edu/abs/2003physics...6138B), the code was developed as a part of the work leading to the paper [Lyman α-emitting galaxies in the epoch of reionization](https://arxiv.org/abs/1806.07392v1).
 
 ## Acknowledgments
 
@@ -13,7 +16,7 @@ If you use the code for scientific use, I'd be happy if you could cite [Laursen 
 
 ## Documentation
 
-I will write a better description here <s>soon</s> at some point, but all you need is the file `add_asym.py`, in which the docstring describes how — and in particular *why* — to use the code.
+I will write a better description in the bottom of this document <s>soon</s> at some point, but really all you need is the file `add_asym.py`, in which the docstring describes how — and in particular *why* — to use the code.
 
 ## Usage
 
@@ -21,7 +24,16 @@ To add the following numbers
 	
 ![equation](http://latex.codecogs.com/gif.latex?5_{-2}^{+1}\\,\\,+\\,\\,3_{-3}^{+1}\\,\\,+\\,\\,4_{-3}^{+2})
 
-<!--$$
+<!--
+5<sup style='position: relative; left: +.1em; top: -.3em;'>+1</sup><sub style='position: relative; left: -1.1em; top: .2em;'>–2</sub>+
+&nbsp;
+3<sup style='position: relative; left: +.1em; top: -.3em;'>+1</sup><sub style='position: relative; left: -1.1em; top: .2em;'>–3</sub>+
+&nbsp;
+4<sup style='position: relative; left: +.1em; top: -.3em;'>+2</sup><sub style='position: relative; left: -1.1em; top: .2em;'>–3</sub>,
+-->
+
+<!--
+$$
 \qquad 5_{-2}^{+1}  \,+\,  3_{-3}^{+1}  \,+\,  4_{-3}^{+2},
 $$
 -->
@@ -57,3 +69,7 @@ This result can be acheived setting `order=0`, but will output a warning:
 This is WRONG! Mark my words, it is WROOOOOONG!!!
 array([12.        ,  4.69041576,  2.44948974])
 ```
+
+<!--
+## Motivation for using `add_asym`
+-->
