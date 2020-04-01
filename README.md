@@ -1,12 +1,14 @@
+<link href="https://raw.githubusercontent.com/anisotropela/anisotropela.github.io/master/assets/css/styles.css" rel="stylesheet"></link>
+
 # `add_asym`
 
 ## Description
 
-Python code for adding numbers with asymmetric uncertainties, developed as a part of the work leading to the paper [Lyman α-emitting galaxies in the epoch of reionization](https://arxiv.org/abs/1806.07392v1). Basically just a numerical implementation of the statistical methods discussed in [Barlow (2003)](https://arxiv.org/abs/0306138).
+`add_asym` is a <span style="color:var(--orange)">Python</span> code for adding numbers with asymmetric uncertainties. Basically just a numerical implementation of the statistical methods discussed in [Barlow (2003, arXiv:0306138)](https://ui.adsabs.harvard.edu/abs/2003physics...6138B), the code was developed as a part of the work leading to the paper [Lyman α-emitting galaxies in the epoch of reionization](https://arxiv.org/abs/1806.07392v1).
 
 ## Acknowledgments
 
-If you use the code for scientific use, I'd be happy if you could cite [Laursen et al. (2019), A&A, 627, 84](https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..84L),
+If you use the code for scientific use, I'd be happy if you could cite [Laursen et al. (2019, A&A, 627, 84)](https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..84L),
  where the code is described, tested, and applied.
 
 ## Documentation
